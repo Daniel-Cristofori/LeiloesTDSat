@@ -23,6 +23,7 @@ public class ProdutosDAO {
     PreparedStatement prep;
     ResultSet resultset;
     ArrayList<ProdutosDTO> listaProdutos = new ArrayList<>();
+    ArrayList<ProdutosDTO> listaProdutosVendidos = new ArrayList<>();
     
     public void cadastrarProduto (ProdutosDTO produto){
         
@@ -82,13 +83,13 @@ public class ProdutosDAO {
         String sql = "UPDATE produtos SET status=? WHERE id=?";
         
         try {
-                PreparedStatement stmt = conn.prepareStatement(sql);
+                prep = conn.prepareStatement(sql);
                 
-                stmt.setString(1, "Vendido");
+                prep.setString(1, "Vendido");
                 
-                stmt.setInt(2, id);
+                prep.setInt(2, id);
                 
-                stmt.execute();
+                prep.execute();
                 
         } catch (SQLException e) {
             
@@ -96,6 +97,39 @@ public class ProdutosDAO {
             
         }
     }
+    
+    public ArrayList<ProdutosDTO> listarProdutosVendidos(){
+        
+                try {
+                    
+                    conn = new conectaDAO().connectDB();
+                    prep = conn.prepareStatement("SELECT * FROM produtos WHERE status=?");
+                    
+                    prep.setString(1, "Vendido");
+                    
+                    resultset = prep.executeQuery();            
+                    
+                    while (resultset.next()) { 
+                        
+                        ProdutosDTO produto = new ProdutosDTO();
+                        
+                        produto.setId(resultset.getInt("id"));
+                        produto.setNome(resultset.getString("nome"));
+                        produto.setValor(resultset.getInt("valor"));
+                        produto.setStatus(resultset.getString("status"));
+                            
+                        listaProdutosVendidos.add(produto);    
+                        
+                    }
+                    
+                    return listaProdutosVendidos;
+                    
+                } catch (SQLException e) {
+                    
+                    return null;
+                    
+                }
+        }
     
 }
 
